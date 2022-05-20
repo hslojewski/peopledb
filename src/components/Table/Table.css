@@ -13,3 +13,10 @@
 /* .notes-table td{ width: 100%; } */
 .note-id{ width: 10%; }
 .note-input{ width: 50%; }
+body{ padding: 10px; }
+a.disabled {
+	color: gray;
+  pointer-events: none;
+  cursor: default;
+}
+th, .center{ text-align: center; }

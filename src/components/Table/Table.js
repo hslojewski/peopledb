@@ -19,81 +19,8 @@ function Table() {
   const [formErrors, setFormErrors] = useState({required:[],format:[]});
 
   useEffect(() => {
-    // refreshPeopleData();
     refreshPeopleNotesData();
   }, [])
-
-  $('.bleh').on('click', (e) => {
-    e.preventDefault();
-    $('.bleh').unbind();
-    // $.ajax({
-    //     type: "POST",
-    //     datatype : "application/json",
-    //     async: true,
-    //     url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People?api_key=keyK2FU3DKzVm9DNS",
-    //     data: ({
-    //       // id: "recqTAdGUfDNCE8fX",
-    //       fields: {
-    //         name: "Minnie Test 2",
-    //         // birthday: "1928-11-28",
-    //         // peopleNotes: [
-    //         //   "recKCy23rn1IWKzXR",
-    //         // ]
-    //         // zipCode: 90210
-    //       }
-    //     }),
-    //     dataType: "html",
-    //     success: function(data) {
-    //       console.log('success');
-    //       fetch("https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People?api_key=keyK2FU3DKzVm9DNS")
-    //         .then(res => res.json())
-    //         .then(
-    //           (result) => {
-    //             var peopleList = result.records;
-    //             setPeople(peopleList);
-    //           },
-    //           (error) => {
-    //             return error;
-    //           }
-    //         )
-    //     },
-    //     error: function(error) {
-    //       console.log(error.responseText);
-    //     }
-    // });
-    $.ajax({
-        type: "POST",
-        datatype : "application/json",
-        async: true,
-        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/PeopleNotes?api_key=keyK2FU3DKzVm9DNS",
-        data: ({
-          // id: "recqTAdGUfDNCE8fX",
-          fields: {
-            // noteId: 1,
-            note: "Mickey was the Walt Disney Company's first character. He's amazing!",
-            peopleId: [ "reczLL6THxiiEaAtZ" ]
-          }
-        }),
-        dataType: "html",
-        success: function(data) {
-          console.log('success');
-          fetch("https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People?api_key=keyK2FU3DKzVm9DNS")
-            .then(res => res.json())
-            .then(
-              (result) => {
-                // var peopleList = result.records;
-                // setPeople(peopleList);
-              },
-              (error) => {
-                return error;
-              }
-            )
-        },
-        error: function(error) {
-          console.log(error.responseText);
-        }
-    });
-  })
 
   var refreshPeopleData = () => {
     fetch("https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People?api_key=keyK2FU3DKzVm9DNS")
@@ -127,17 +54,18 @@ function Table() {
       )
   }
 
-  var putRecord = (data, dataId) => {
+  var putRecord = (type, data, dataId) => {
     if (hasFormErrors(data)) { return; }
     $.ajax({
         type: "PUT",
         datatype : "application/json",
         async: true,
-        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People/"+dataId+"?api_key=keyK2FU3DKzVm9DNS",
+        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/"+type+"/"+dataId+"?api_key=keyK2FU3DKzVm9DNS",
         data: data,
         dataType: "html",
         success: function(data) {
           console.log('success');
+          refreshPeopleData();
         },
         error: function(error) {
           console.log(error.responseText);
@@ -145,13 +73,13 @@ function Table() {
     });
   }
 
-  var putNoteRecord = (data, dataId) => {
+  var postRecord = (type, data) => {
     if (hasFormErrors(data)) { return; }
     $.ajax({
-        type: "PUT",
+        type: "POST",
         datatype : "application/json",
         async: true,
-        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/PeopleNotes/"+dataId+"?api_key=keyK2FU3DKzVm9DNS",
+        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/"+type+"?api_key=keyK2FU3DKzVm9DNS",
         data: data,
         dataType: "html",
         success: function(data) {
@@ -164,51 +92,12 @@ function Table() {
     });
   }
 
-  var postPersonRecord = (data) => {
-    // debugger;
-    if (hasFormErrors(data)) { return; }
-    $.ajax({
-        type: "POST",
-        datatype : "application/json",
-        async: true,
-        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People?api_key=keyK2FU3DKzVm9DNS",
-        data: data,
-        dataType: "html",
-        success: function(data) {
-          console.log('success');
-          refreshPeopleData();
-        },
-        error: function(error) {
-          console.log(error.responseText);
-        }
-    });
-  }
-
-  var postPersonNoteRecord = (data) => {
-    if (hasFormErrors(data)) { return; }
-    $.ajax({
-        type: "POST",
-        datatype : "application/json",
-        async: true,
-        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/PeopleNotes?api_key=keyK2FU3DKzVm9DNS",
-        data: data,
-        dataType: "html",
-        success: function(data) {
-          console.log('success');
-          refreshPeopleNotesData();
-        },
-        error: function(error) {
-          console.log(error.responseText);
-        }
-    });
-  }
-
-  var deletePersonRecord = (dataId) => {
+  var deleteRecord = (type, dataId) => {
     $.ajax({
         type: "DELETE",
         datatype : "application/json",
         async: true,
-        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People/"+dataId+"?api_key=keyK2FU3DKzVm9DNS",
+        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/"+type+"/"+dataId+"?api_key=keyK2FU3DKzVm9DNS",
         dataType: "html",
         success: function(data) {
           console.log('success');
@@ -219,56 +108,6 @@ function Table() {
         }
     });
   }
-
-  var deleteNoteRecord = (dataId) => {
-    $.ajax({
-        type: "DELETE",
-        datatype : "application/json",
-        async: true,
-        url: "https://api.airtable.com/v0/apps8Op2rBivGM3Yc/PeopleNotes/"+dataId+"?api_key=keyK2FU3DKzVm9DNS",
-        dataType: "html",
-        success: function(data) {
-          console.log('success');
-          refreshPeopleData();
-        },
-        error: function(error) {
-          console.log(error.responseText);
-        }
-    });
-  }
-
-  // var getNotes = (peopleId) => {
-  //   fetch("https://api.airtable.com/v0/apps8Op2rBivGM3Yc/People/" + peopleId + "?api_key=keyK2FU3DKzVm9DNS")
-  //     .then(res => res.json())
-  //     .then(
-  //       (result) => {
-  //         records.forEach((record) => {
-  //           if (record.fields.peopleNotes.length) {
-  //             record.fields.peopleNotes.forEach((noteId) => {
-  //               var note = getNotes(noteId);
-  //               debugger;
-  //             })
-  //           }
-  //         })
-  //         return result;
-  //       },
-  //       (error) => {
-  //         return error;
-  //       }
-  //     )
-  // }
-
-  // var createRecord = () => {
-  //
-  // }
-  //
-  // var editRecord = () => {
-  //
-  // }
-  //
-  // var deletePerson = () => {
-  //
-  // }
 
   var changeEditMode = (e) => {
     console.log(e);
@@ -307,7 +146,7 @@ function Table() {
       }
     })
     console.log(blah);
-    putRecord({fields: blah}, e.target.id);
+    putRecord("People", {fields: blah}, e.target.id);
     setEditMode(null);
   };
 
@@ -325,16 +164,16 @@ function Table() {
     })
     console.log(blah);
       // debugger;
-    putNoteRecord({fields: blah}, e.target.id);
+    putRecord("PeopleNotes", {fields: blah}, e.target.id);
     setEditMode(null);
   };
 
   var deletePerson = (e) => {
-    deletePersonRecord(e.target.id);
+    deleteRecord("People", e.target.id);
   };
 
   var deleteNote = (e) => {
-    deleteNoteRecord(e.target.id);
+    deleteRecord("PeopleNotes", e.target.id);
   };
 
   var createNewPerson = (e) => {
@@ -353,7 +192,7 @@ function Table() {
       }
     })
     console.log(blah);
-    postPersonRecord({fields: blah});
+    postRecord("People", {fields: blah});
     // setEditMode(null);
   };
 
@@ -373,7 +212,7 @@ function Table() {
       }
     })
     console.log(blah);
-    postPersonNoteRecord({fields: blah});
+    postRecord("PeopleNotes", {fields: blah});
     // setEditMode(null);
   };
 
@@ -381,13 +220,17 @@ function Table() {
     console.log(e);
     console.log("before:",people);
     // debugger;
-    var blah = people.sort((a,b)=> (a[e.target.id] < b[e.target.id] ? 1 : -1));
+    // if (e.target.id === "createdTime") {
+    //   debugger;
+    // }
+    var blah = people.sort((a,b)=> (a[e.target.id] - b[e.target.id] ? 1 : -1));
     setPeople([...blah]);
     console.log("after:",people);
   };
 
   var hasFormErrors = (data) => {
-    var requiredFields = ["name", "birthday", "zipCode"];
+    // var requiredFields = ["name", "birthday", "zipCode"];
+    var requiredFields = ["name", "birthday"];
     var missingFields = [];
     var wrongFormats = [];
     requiredFields.forEach(requiredField => {
@@ -399,61 +242,34 @@ function Table() {
     if (data.fields.zipCode && isNaN(data.fields.zipCode) && data.fields.zipCode.toString().length !== 5) {
       wrongFormats.push("zipCode");
     }
+
+    if (!missingFields.length && !wrongFormats.length) {
+      $("#new-person input[type=text]").val("");
+    }
+
     setFormErrors({...formErrors, required: missingFields, format: wrongFormats});
   }
 
-  // var getNotes = (e) => {
-  //   var noteId = e.target.getAttribute('value');
-  //   if (noteId) {
-  //     fetch("https://api.airtable.com/v0/apps8Op2rBivGM3Yc/PeopleNotes/"+noteId+"?api_key=keyK2FU3DKzVm9DNS")
-  //       .then(res => res.json())
-  //       .then(
-  //         (result) => {
-  //           people.forEach(person => {
-  //             if (person.id === result.fields.peopleId[0]) {
-  //               if (person.notes) {
-  //                 person.notes.push(result);
-  //               } else {
-  //                 person.notes= [result];
-  //               }
-  //             }
-  //           })
-  //           setPeopleNotes(people);
-  //         },
-  //         (error) => {
-  //           return error;
-  //         }
-  //       )
-  //   }
-  //
-  // };
-
   return (
     <div className="Table">
-    People
-    <button className="bleh">just spit up random new entries lol</button>
-    <table className="table">
+    <h4>People</h4>
+    <table className="table table-striped">
       <thead>
         <tr>
           <th scope="col" id="name" onClick={sort}>
-            Name
-            <i className="bi bi-arrow-down-up"></i>
+            Name <i className="bi bi-arrow-down-up" />
           </th>
           <th scope="col" id="birthday" onClick={sort}>
-            Birthday
-            <i className="bi bi-arrow-down-up"></i>
+            Birthday <i className="bi bi-arrow-down-up" />
           </th>
           <th scope="col" id="zipCode" onClick={sort}>
-            Zip Code
-            <i className="bi bi-arrow-down-up"></i>
+            Zip Code <i className="bi bi-arrow-down-up" />
           </th>
           <th scope="col" id="createdTime" onClick={sort}>
-            Created Time
-            <i className="bi bi-arrow-down-up"></i>
+            Created Time <i className="bi bi-arrow-down-up" />
           </th>
           <th scope="col" id="modifiedTime" onClick={sort}>
-            Modified Time
-            <i className="bi bi-arrow-down-up"></i>
+            Modified Time <i className="bi bi-arrow-down-up" />
           </th>
           <th>Notes</th>
           <th>Edit/Save</th>
@@ -488,33 +304,61 @@ function Table() {
                 {inEditMode && <input className="form-control" form={formId} type="text" name="birthday" defaultValue={person.fields.birthday}></input>}
                 {!inEditMode && <Moment format="MM/DD/YYYY">{person.fields.birthday}</Moment>}
               </td>
-              <td>
+              <td className="center">
                 {inEditMode && <input className="form-control" form={formId} type="text" name="zipCode" defaultValue={person.fields.zipCode}></input>}
                 {!inEditMode && <span>{person.fields.zipCode}</span>}
               </td>
-              <td>
+              <td className="center">
                 <Moment format="YYYY-MM-DD HH:mm">{person.fields.createdTime}</Moment>
               </td>
-              <td>
+              <td className="center">
                 <Moment format="YYYY-MM-DD HH:mm">{person.fields.modifiedTime}</Moment>
               </td>
-              <td style={{display: 'none'}}>
+              <td style={{display: 'none'}} className="center">
                 <input className="form-control" form={formId} type="text" hidden name="peopleNotes" defaultValue={person.fields.peopleNotes}></input>
               </td>
-              <td>
+              <td className="center">
                 {!!personNotes.length &&
-                  <a id={person.id} onClick={toggleNotes} title="View Notes" className="bi bi-list-stars"></a>
+                  <span>
+                    {!isNotesVisible &&
+                      <a id={person.id} onClick={toggleNotes} className="btn btn-secondary">
+                        Open <i className="bi bi-eye-fill" />
+                      </a>
+                    }
+                    {!!isNotesVisible &&
+                      <a id={person.id} onClick={toggleNotes} className="btn btn-secondary">
+                        Close <i className="bi bi-eye-slash-fill" />
+                      </a>
+                    }
+                  </span>
                 }
                 {!personNotes.length &&
-                  <a id={person.id} onClick={toggleNotes}>Add+</a>
+                  <span>
+                    {!isNotesVisible &&
+                      <a id={person.id} onClick={toggleNotes} className="btn btn-secondary">
+                        Add +
+                      </a>
+                    }
+                    {!!isNotesVisible &&
+                      <a id={person.id} onClick={toggleNotes} className="btn btn-secondary">
+                        Cancel <i className="bi bi-journal-x" />
+                      </a>
+                    }
+                  </span>
                 }
               </td>
-              <td>
-                {!inEditMode && <a id={person.id} onClick={changeEditMode} title="Edit" className="bi bi-pencil-fill"></a>}
-                {inEditMode && <a type="submit" id={person.id} onClick={removeFromEditMode} title="Save" className="bi bi-save-fill"></a>}
+              <td className="center">
+                {!inEditMode && <a id={person.id} onClick={changeEditMode} className="btn btn-secondary">
+                  Edit <i className="bi bi-pencil-fill" />
+                </a>}
+                {inEditMode && <a type="submit" id={person.id} onClick={removeFromEditMode} className="btn btn-secondary">
+                  Save <i className="bi bi-save-fill" />
+                </a>}
               </td>
-              <td>
-                <a id={person.id} onClick={deletePerson} title="Delete" className="bi bi-trash-fill"></a>
+              <td className="center">
+                <a id={person.id} onClick={deletePerson} className="btn btn-danger">
+                  Delete <i className="bi bi-trash-fill" />
+                </a>
               </td>
             </tr>
             {!!isNotesVisible &&
@@ -550,8 +394,10 @@ function Table() {
                               {!inNoteEditMode && <a id={note.id} onClick={changeEditMode} title="Edit" className="bi bi-pencil-fill"></a>}
                               {inNoteEditMode && <a type="submit" id={note.id} onClick={removeFromNoteEditMode} title="Save" className="bi bi-save-fill"></a>}
                             </td> */}
-                            <td>
-                              <a id={note.id} onClick={deleteNote} title="Delete" className="bi bi-trash-fill"></a>
+                            <td className="center">
+                              <a id={note.id} onClick={deleteNote}  className="btn btn-danger">
+                                Delete <i className="bi bi-trash-fill" />
+                              </a>
                             </td>
                           </tr>
                         )
@@ -561,9 +407,13 @@ function Table() {
                   }
                   <form key="new-note" id="new-note" className="row">
                     <input type="hidden" name="peopleId" value={person.id}></input>
-                    <span className="col">New Note:</span>
+                    <span className="col col-1">New Note:</span>
                     <input className="col form-control" type="text" name="note" placeholder="Message"></input>
-                    <a type="submit" onClick={createNewNote} title="Save" className="col bi bi-save-fill"></a>
+                    <div className="col col-1">
+                      <a type="submit" onClick={createNewNote} className="btn btn-primary">
+                        Save <i className="col bi bi-save-fill" />
+                      </a>
+                    </div>
                   </form>
                 </td>
               </tr>
@@ -575,15 +425,27 @@ function Table() {
 
         <br/><br/><br/><br/>
 
-        <form key="new-person" id="new-person" className="row">
-          <input className="col form-control" type="text" name="name" placeholder="name"></input>
-          <div style={{display:formErrors.required.includes("name") ? "block" : "none"}} className="invalid-feedback">Name is required.</div>
-          <input className="col form-control" type="text" name="birthday" placeholder="birthday"></input>
-          <div style={{display:formErrors.required.includes("birthday") ? "block" : "none"}} className="invalid-feedback">Birthday is required.</div>
-          <input className="col form-control" type="text" name="zipCode" placeholder="zipCode"></input>
-          <div style={{display:formErrors.required.includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code is required.</div>
-          <div style={{display:formErrors.format.includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code must be a 5 digit number.</div>
-          <a className="col save" type="submit" onClick={createNewPerson} title="Save" className="col bi bi-save-fill"></a>
+        <h4>Create New Person</h4>
+        <form key="new-person" id="new-person" className="row g-3 needs-validation">
+          <div class="col-md-5">
+            <label for="name" class="form-label">Name</label>
+            <input id="name" className="col form-control col-md-4" type="text" name="name" required></input>
+            <div style={{display:formErrors.required.includes("name") ? "block" : "none"}} className="invalid-feedback">Name is required.</div>
+          </div>
+          <div class="col-md-3">
+            <label for="birthday" class="form-label">Birthday</label>
+            <input id="birthday"className="col form-control col-md-4" type="text" name="birthday" placeholder="mm/dd/yyyy" required></input>
+            <div style={{display:formErrors.required.includes("birthday") ? "block" : "none"}} className="invalid-feedback" required>Birthday is required.</div>
+          </div>
+          <div class="col-md-3">
+            <label for="zipCode" class="form-label">Zip Code</label>
+            <input id="zipCode"className="col form-control col-md-4" type="text" name="zipCode"></input>
+            <div style={{display:formErrors.required.includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code is required.</div>
+            <div style={{display:formErrors.format.includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code must be a 5 digit number.</div>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" onClick={createNewPerson} className="col btn btn-primary">Save <i className="bi bi-save-fill" /></button>
+          </div>
         </form>
     </div>
   );
