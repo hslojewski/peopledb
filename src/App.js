@@ -57,7 +57,6 @@ function App() {
   }
 
   var editRecord = (type, data, dataId) => {
-    debugger;
     if (hasFormErrors(data, dataId)) { return; }
     $.ajax({
         type: "PUT",
@@ -235,7 +234,7 @@ function App() {
       }
     });
 
-    if (data.fields.zipCode && isNaN(data.fields.zipCode) && data.fields.zipCode.toString().length !== 5) {
+    if (isNaN(data.fields.zipCode) || data.fields.zipCode.toString().length !== 5) {
       wrongFormats.push("zipCode");
     }
 
@@ -267,23 +266,28 @@ function App() {
     });
   }
 
+  var zipRequiredError = ((formErrors.new||{}).required||[]).includes("zipCode"),
+      zipFormatError = ((formErrors.new||{}).format||[]).includes("zipCode"),
+      nameClasses = "col form-control col-md-4 ".concat(((formErrors.new||{}).required||[]).includes("name") ? "is-invalid" : ""),
+      birthdayClasses = "col form-control col-md-4 ".concat(((formErrors.new||{}).required||[]).includes("birthday") ? "is-invalid" : ""),
+      zipCodeClasses = "col form-control col-md-4 ".concat((zipRequiredError||zipFormatError) ? "is-invalid" : "");
   return (
     <div>
       <h4>Create New Person</h4>
       <form key="new-person" id="new-person" className="row g-3 needs-validation">
         <div className="col-md-5">
           <label htmlFor="name" className="form-label">Name</label>
-          <input id="name" className="col form-control col-md-4" type="text" name="name" required></input>
+          <input id="name" className={nameClasses} type="text" name="name" required></input>
           <div style={{display:((formErrors.new||{}).required||[]).includes("name") ? "block" : "none"}} className="invalid-feedback">Name is required.</div>
         </div>
         <div className="col-md-3">
           <label htmlFor="birthday" className="form-label">Birthday</label>
-          <input id="birthday"className="col form-control col-md-4" type="text" name="birthday" placeholder="mm/dd/yyyy" required></input>
+          <input id="birthday"className={birthdayClasses} type="text" name="birthday" placeholder="mm/dd/yyyy" required></input>
           <div style={{display:((formErrors.new||{}).required||[]).includes("birthday") ? "block" : "none"}} className="invalid-feedback" required>Birthday is required.</div>
         </div>
         <div className="col-md-3">
           <label htmlFor="zipCode" className="form-label">Zip Code</label>
-          <input id="zipCode"className="col form-control col-md-4" type="text" name="zipCode"></input>
+          <input id="zipCode"className={zipCodeClasses} type="text" name="zipCode"></input>
           <div style={{display:((formErrors.new||{}).required||[]).includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code is required.</div>
           <div style={{display:((formErrors.new||{}).format||[]).includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code must be a 5 digit number.</div>
         </div>
@@ -327,8 +331,12 @@ function App() {
                 personNotes.push(peopleNotes[noteId]);
               });
             }
-            var isNotesVisible = visibleNotes.includes(person.id);
-            // debugger;
+            var isNotesVisible = visibleNotes.includes(person.id),
+                indZipRequiredError = ((formErrors[person.id]||{}).required||[]).includes("zipCode"),
+                indZipFormatError = ((formErrors[person.id]||{}).format||[]).includes("zipCode"),
+                indNameClasses = "form-control ".concat(((formErrors[person.id]||{}).required||[]).includes("name") ? "is-invalid" : ""),
+                indBirthdayClasses = "form-control ".concat(((formErrors[person.id]||{}).required||[]).includes("birthday") ? "is-invalid" : ""),
+                indZipCodeClasses = "form-control ".concat((zipRequiredError||zipFormatError) ? "is-invalid" : "");
             return (
               <tbody>
               <tr>
@@ -336,17 +344,17 @@ function App() {
                   <form type="hidden" key={personId} id={formId}></form>
                 </td>
                 <td>
-                  {inEditMode && <input className="form-control" form={formId} type="text" name="name" defaultValue={person.fields.name}></input>}
+                  {inEditMode && <input className={indNameClasses} form={formId} type="text" name="name" defaultValue={person.fields.name}></input>}
                   {!inEditMode && <span>{person.fields.name}</span>}
                   <div style={{display:((formErrors[person.id]||{}).required||[]).includes("name") ? "block" : "none"}} className="invalid-feedback">Name is required.</div>
                 </td>
                 <td className="center">
-                  {inEditMode && <input className="form-control" form={formId} type="text" name="birthday" defaultValue={person.fields.birthday}></input>}
+                  {inEditMode && <input className={indBirthdayClasses} form={formId} type="text" name="birthday" defaultValue={person.fields.birthday}></input>}
                   {!inEditMode && <Moment format="MM/DD/YYYY">{person.fields.birthday}</Moment>}
                   <div style={{display:((formErrors[person.id]||{}).required||[]).includes("birthday") ? "block" : "none"}} className="invalid-feedback" required>Birthday is required.</div>
                 </td>
                 <td className="center">
-                  {inEditMode && <input className="form-control" form={formId} type="text" name="zipCode" defaultValue={person.fields.zipCode}></input>}
+                  {inEditMode && <input className={indZipCodeClasses} form={formId} type="text" name="zipCode" defaultValue={person.fields.zipCode}></input>}
                   {!inEditMode && <span>{person.fields.zipCode}</span>}
                   <div style={{display:((formErrors[person.id]||{}).required||[]).includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code is required.</div>
                   <div style={{display:((formErrors[person.id]||{}).format||[]).includes("zipCode") ? "block" : "none"}} className="invalid-feedback">Zip Code must be a 5 digit number.</div>
